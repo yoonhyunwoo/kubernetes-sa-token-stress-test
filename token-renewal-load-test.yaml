@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: token-renewal-load-test
+  namespace: token-renewal-load-test
+spec:
+  replicas: 50
+  selector:
+    matchLabels:
+      app: token-renewal-load-test
+  template:
+    metadata:
+      labels:
+        app: token-renewal-load-test
+    spec:
+      containers:
+      - name: renewal-tester
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            while true; do              
+              TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+              curl -s -o /dev/null -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc/api --insecure
+              echo "Token used at $(date)"
+              sleep 10;  
+            done
+        volumeMounts:
+        - name: token-volume
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      restartPolicy: Always
+      serviceAccountName: default  
+      volumes:
+      - name: token-volume
+        projected:
+          sources:
+          - serviceAccountToken:
+              expirationSeconds: 600

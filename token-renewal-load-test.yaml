@@ -2,9 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: token-renewal-load-test
-  namespace: token-renewal-load-test
 spec:
-  replicas: 50
+  replicas: 50  
   selector:
     matchLabels:
       app: token-renewal-load-test
@@ -19,7 +18,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            while true; do              
+            while true; do
               TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
               curl -s -o /dev/null -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc/api --insecure
               echo "Token used at $(date)"
@@ -35,4 +34,5 @@ spec:
         projected:
           sources:
           - serviceAccountToken:
-              expirationSeconds: 600
+              path: token  
+              expirationSeconds: 600  

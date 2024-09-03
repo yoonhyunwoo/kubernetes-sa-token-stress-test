@@ -1,6 +1,10 @@
 # kubernetes-sa-token-stress-test
 Kubernetes Service Account renewal load test for renewal jitter value
 
+
+[requirements posts](https://blog.hyunwoo.monster/kubernetes-kubelet-serviceaccounttoken-jiteo-gabs-gaeseon/)
+
+
 ## 1. Deploying Token Load Test
 kubectl apply -f token-renewal-load-test.yaml
 
